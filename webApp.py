@@ -14,15 +14,17 @@ app.config['SECRET_KEY'] = 'your_secret_key_here'
 def home():
   return render_template('home.html', subtitle='Home Page', text='This is the home page')
 
+import logging
+logging.basicConfig(filename='/home/sebguev/webhook.log', level=logging.DEBUG)
+
 @app.route("/update_server", methods=['POST'])
 def webhook():
-  if request.method == 'POST':
-    repo = git.Repo('/home/codio/workspace')
-    origin = repo.remotes.origin
-    origin.pull()
-    return 'Updated PythonAnywhere successfully', 200
-  else:
-    return 'Wrong event type', 400
+  logging.info('Webhook endpoint accessed')
+  return 'Webhook received', 200
+
+@app.route("/")
+def home():
+  return "Hello from Flask!"
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
