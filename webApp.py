@@ -7,24 +7,22 @@ app = Flask(__name__)
 proxied = FlaskBehindProxy(app)  # Handle proxy headers
 
 # Secret key for form security
-app.config['SECRET_KEY'] = 'your_secret_key_here'
+app.config['SECRET_KEY'] = '3b7cb790562b72acaf923976d766ad47'
 
 @app.route("/")
 @app.route("/home")
 def home():
   return render_template('home.html', subtitle='Home Page', text='This is the home page')
 
-import logging
-logging.basicConfig(filename='/home/sebguev/webhook.log', level=logging.DEBUG)
-
 @app.route("/update_server", methods=['POST'])
 def webhook():
-  logging.info('Webhook endpoint accessed')
-  return 'Webhook received', 200
-
-@app.route("/")
-def home():
-  return "Hello from Flask!"
+  if request.method == 'POST':
+    repo = git.Repo('/home/sebguev/Week3Page')
+    origin = repo.remotes.origin
+    origin.pull()
+    return 'Updated PythonAnywhere successfully', 200
+  else:
+    return 'Wrong event type', 400
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
